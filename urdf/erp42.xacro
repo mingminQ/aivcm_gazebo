@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="erp42_scmc">
+
+    <!-- Include files -->
+    <xacro:include filename="$(find erp42_description)/urdf/erp42_model.xacro"/>
+    <xacro:include filename="$(find erp42_gazebo)/urdf/erp42_gazebo_control.xacro"/>
+
+    <xacro:include filename="$(find aivcm_gazebo)/urdf/iahrs_rb_sda_v1.xacro"/>
+    <xacro:include filename="$(find aivcm_gazebo)/urdf/ublox_zed_f9p.xacro"/>
+    <xacro:include filename="$(find aivcm_gazebo)/urdf/vlp_32c.xacro"/>
+    <xacro:include filename="$(find aivcm_gazebo)/urdf/logitech_c930.xacro"/>
+    <xacro:include filename="$(find aivcm_gazebo)/urdf/logitech_c920.xacro"/>
+
+    <!-- ERP42 model description and gazebo control settings -->
+    <xacro:erp42_model/>
+    <xacro:erp42_gazebo_control/>
+
+    <!-- iAHRS RB SDA v1 IMU -->
+    <xacro:iahrs_rb_sda_v1 parent_link="base_link" link_name="iahrs" 
+        origin_x="0.0" origin_y="0.0" origin_z="0.6" 
+        origin_roll="0.0" origin_pitch="0.0" origin_yaw="0.0"
+    />
+
+    <!-- Ublox zed f9p GPS -->
+    <xacro:ublox_zed_f9p parent_link="base_link" link_name="ublox_gps" 
+        origin_x="0.0" origin_y="0.0" origin_z="1.2" 
+        origin_roll="0.0" origin_pitch="0.0" origin_yaw="0.0"
+    />
+
+    <!-- Velodyne LiDAR -->
+    <xacro:vlp_32c parent_link="base_link" link_name="velodyne"
+        origin_x    = "0.8" origin_y     = "0.0" origin_z   = "0.3"
+        origin_roll = "0.0" origin_pitch = "0.0" origin_yaw = "0.0"
+    />
+
+    <!-- Logitech C920 camera : traffic_light -->
+    <xacro:logitech_c920 parent_link="base_link" link_name="logitech_c920_traffic_light" 
+        origin_x="0.0" origin_y="0.0" origin_z="1.0" 
+        origin_roll="0.0" origin_pitch="0.0" origin_yaw="0.0"
+    />
+
+    <!-- Logitech C920 camera : traffic_sign -->
+    <xacro:logitech_c920 parent_link="velodyne" link_name="logitech_c920_traffic_sign" 
+        origin_x="-0.3" origin_y="0.0" origin_z="0.3"
+        origin_roll="0.0" origin_pitch="0.0" origin_yaw="-0.78539816339"
+    />
+
+    <!-- Logitech C930 camera : left side -->
+    <xacro:logitech_c930 parent_link="velodyne" link_name="logitech_c930_left" 
+        origin_x="-0.7" origin_y="0.3" origin_z="0.6" 
+        origin_roll="0.0" origin_pitch="0.0" origin_yaw="0.78539816339"
+    />
+
+    <!-- Logitech C930 camera : right side -->
+    <xacro:logitech_c930 parent_link="velodyne" link_name="logitech_c930_right" 
+        origin_x="-0.7" origin_y="-0.3" origin_z="0.6" 
+        origin_roll="0.0" origin_pitch="0.0" origin_yaw="-0.78539816339"
+    />
+
+</robot>

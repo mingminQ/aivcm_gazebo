@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Logitech C930 camera -->
+    <xacro:macro name="logitech_c930" params="parent_link link_name origin_x origin_y origin_z origin_roll origin_pitch origin_yaw">
+
+        <!-- ======================================== Variables ======================================== -->
+        <xacro:property name="logitech_c930_length" value="0.025"/>
+        <xacro:property name="logitech_c930_width"  value="0.090"/>
+        <xacro:property name="logitech_c930_height" value="0.028"/>
+
+        <!-- ======================================== Links ======================================== -->
+        
+        <!-- Camera body link -->
+        <link name="${link_name}">
+
+            <!-- Inertia -->
+            <inertial>
+                <mass value="0.001" />
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+            </inertial>
+
+            <!-- Mesh -->
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh 
+                        filename="file://$(find aivcm_gazebo)/meshes/logitech_c930.dae" scale="0.001 0.001 0.001"/>
+                </geometry>
+            </visual>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find aivcm_gazebo)/meshes/logitech_c930_lens.dae" scale="0.001 0.001 0.001"/>
+                </geometry>
+            </visual>
+
+        </link>
+
+        <!-- Camera optical link -->
+        <link name="${link_name}_optical">
+
+            <!-- Inertia -->
+            <inertial>
+                <mass value="0.001" />
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0.0" izz="0.001" />
+            </inertial>
+
+        </link>
+
+        <!-- ======================================== Joints ======================================== -->
+
+        <!-- parent_link to camera_body_link -->
+        <joint name="${parent_link}_to_${link_name}" type="fixed">
+            <parent link="${parent_link}" />
+            <child link="${link_name}" />
+            <origin xyz="${origin_x} ${origin_y} ${origin_z}" rpy="${origin_roll} ${origin_pitch} ${origin_yaw}" />
+        </joint>
+
+        <!-- camera_body_link to camera_optical_link-->
+        <joint name="${link_name}_to_${link_name}_optical" type="fixed">
+            <parent link="${link_name}" />
+            <child link="${link_name}_optical" />
+            <origin xyz="0 0 0" rpy="-1.570796 0 -1.570796" />
+        </joint>
+
+        <!-- ======================================== Gazebo camera plugin ======================================== -->
+        <gazebo reference="${link_name}">
+
+            <!-- Sensor properties -->
+            <sensor name="${link_name}" type="camera">
+
+                <!-- Topic -->
+                <update_rate>15.0</update_rate>
+                <always_on>true</always_on>
+                <visualize>false</visualize>
+
+                <!-- Optical -->
+                <camera>
+
+                    <!-- FOV-->
+                    <horizontal_fov>1.167485</horizontal_fov>
+
+                    <!-- Data formats -->
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                        <format>R8G8B8</format>
+                    </image>
+
+                    <!-- Detection area -->
+                    <clip>
+                        <near>0.05</near>
+                        <far>100.0</far>
+                    </clip>
+
+                    <!-- Distortion -->
+                    <!--
+                    <distortion>
+                        <k1>0.162875</k1><k2>-0.287212</k2><k3>0.0</k3>
+                        <p1>0.000692</p1><p2>-0.000678</p2>
+                        <center><x>291.5055</x><y>222.6638</y></center>
+                    </distortion>
+                    -->
+
+                </camera>
+
+                <!-- Gazebo ROS camera plugin -->
+                <plugin name="${link_name}_plugin" filename="libgazebo_ros_camera.so">
+                    <camera_name>${link_name}</camera_name>
+                    <image_topic_name>${link_name}/image_raw</image_topic_name> 
+                    <camera_info_topic_name>${link_name}/camera_info</camera_info_topic_name>
+                    <frame_name>${link_name}_optical</frame_name>
+                </plugin>
+
+            </sensor>
+        </gazebo>
+
+    </xacro:macro>
+
+</robot>

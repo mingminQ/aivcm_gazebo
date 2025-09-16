@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="3">
+
+    <!-- Package imformation -->
+    <name>aivcm_gazebo</name>
+    <version>0.0.0</version>
+    <description>
+        AIVCM: AIV(Autonomous Intelligent Vehicle) Creative Mobility competition 
+        Assets of meshes, objects, sensors, urdf, rviz, and world files for gazebo simulation.
+    </description>
+
+    <!-- Maintainer and author -->
+    <maintainer email="mgkilprg@gmail.com">Minkyu Kil</maintainer>
+    <author email="mgkilprg@gmail.com">Minkyu Kil</author>
+
+    <!-- License information -->
+    <license>Apache-2.0</license>
+
+    <!-- Build tool : ament_cmake -->
+    <buildtool_depend>ament_cmake</buildtool_depend>
+
+    <!-- Export build system information -->
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+
+</package>

@@ -1,0 +1,100 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Velodyne VLP32C LiDAR -->
+    <xacro:macro name="vlp_32c" params="parent_link link_name origin_x origin_y origin_z origin_roll origin_pitch origin_yaw">
+
+        <!-- ======================================== Variables ======================================== -->
+        <xacro:property name="vlp32c_height" value="0.08659" />
+        <xacro:property name="vlp32c_radius" value="0.05150" />
+
+        <!-- ======================================== Link ======================================== -->
+        <link name="${link_name}">
+
+            <!-- Mesh -->
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find aivcm_gazebo)/meshes/vlp_32c.dae"  scale="0.001 0.001 0.001"/>
+                </geometry>
+            </visual>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find aivcm_gazebo)/meshes/vlp_32c_lens.dae"  scale="0.001 0.001 0.001"/>
+                </geometry>
+            </visual>
+
+        </link>
+
+        <!-- ======================================== Joint ======================================== -->
+        <joint name="${parent_link}_to_${link_name}" type="fixed">
+            <parent link="${parent_link}" />
+            <child link="${link_name}" />
+            <origin xyz="${origin_x} ${origin_y} ${origin_z + vlp32c_height/2}" rpy="${origin_roll} ${origin_pitch} ${origin_yaw}" />
+        </joint>
+
+        <!-- ======================================== Gazebo LiDAR plugin ======================================== -->
+        <gazebo reference="${link_name}">
+
+            <!-- Sensor properties -->
+            <sensor name="${link_name}" type="gpu_ray">
+
+                <!-- Options -->
+                <update_rate>20.0</update_rate>
+                <always_on>true</always_on>
+	            <visualize>false</visualize>
+
+                <!-- Data formats -->
+                <ray>
+                    <scan>
+
+                        <!-- Horizontal detection area -->
+                        <horizontal>
+                            <samples>900</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-3.141592653589793</min_angle>
+                            <max_angle> 3.141592653589793</max_angle>
+                        </horizontal>
+
+                        <!-- Vertical detection area -->
+                        <vertical>
+                            <samples>32</samples>
+                            <resolution>1</resolution>  
+                            <min_angle>-0.4363323129985824</min_angle>
+                            <max_angle> 0.2617993877991494</max_angle>
+                        </vertical>
+                    </scan>
+
+                    <!-- Range area -->
+                    <range>
+                        <min>0.5</min>
+                        <max>200.0</max>
+                        <resolution>0.01</resolution>
+                    </range>
+
+                    <!-- Noise -->
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.0025</stddev>
+                    </noise>
+
+                </ray>
+
+                <!-- Gazebo ROS plugin -->
+                <plugin name="${link_name}_plugin" filename="libgazebo_ros_ray_sensor.so">
+                    <ros>
+                        <remapping>~/out:=/${link_name}_points</remapping>
+                    </ros>
+                    <output_type>sensor_msgs/PointCloud2</output_type>
+                    <frame_name>${link_name}</frame_name>
+                </plugin>
+
+            </sensor>
+
+        </gazebo>
+
+    </xacro:macro>
+
+</robot>

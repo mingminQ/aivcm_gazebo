@@ -1,0 +1,122 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- iAHRS RB SDA v1 IMU -->
+    <xacro:macro name="iahrs_rb_sda_v1" params="parent_link link_name origin_x origin_y origin_z origin_roll origin_pitch origin_yaw">
+
+        <!-- ======================================== Link ======================================== -->
+        <link name="${link_name}">
+
+            <inertial>
+                <mass value="0.001" />
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0.0" izz="0.00001" />
+            </inertial>
+
+            <!-- Mesh -->
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.035 0.035 0.01"/>
+                </geometry>
+                <material name="iahrs_rb_sda_v1_black">
+                    <color rgba="0.1 0.1 0.1 1.0"/>
+                </material>
+            </visual>
+
+        </link>
+
+        <!-- ======================================== Joint ======================================== -->
+        <joint name="${parent_link}_to_${link_name}" type="fixed">
+            <parent link="${parent_link}" />
+            <child link="${link_name}" />
+            <origin xyz="${origin_x} ${origin_y} ${origin_z}" rpy="${origin_roll} ${origin_pitch} ${origin_yaw}" />
+        </joint>
+
+        <!-- ======================================== Gazebo IMU plugin ======================================== -->
+        <gazebo reference="${link_name}">
+
+            <!-- Material -->
+            <material>Gazebo/Black</material>
+
+            <!-- Sensor properties -->
+            <sensor name="${link_name}" type="imu">
+
+                <always_on>true</always_on>
+                <update_rate>100.0</update_rate>
+                <visualize>false</visualize>
+
+                <!-- SDFormat IMU noise model -->
+                <imu>
+                    <!-- Angular velocity (rad/s) -->
+                    <angular_velocity>
+                        <x>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>0.005</stddev>
+                                <bias_mean>0.0</bias_mean>
+                                <bias_stddev>0.0005</bias_stddev>
+                            </noise>
+                        </x>
+                        <y>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>0.005</stddev>
+                                <bias_mean>0.0</bias_mean>
+                                <bias_stddev>0.0005</bias_stddev>
+                            </noise>
+                        </y>
+                        <z>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>0.005</stddev>
+                                <bias_mean>0.0</bias_mean>
+                                <bias_stddev>0.0005</bias_stddev>
+                            </noise>
+                        </z>
+                    </angular_velocity>
+
+                    <!-- Linear acceleration (m/s^2) -->
+                    <linear_acceleration>
+                        <x>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>0.05</stddev>
+                                <bias_mean>0.0</bias_mean>
+                                <bias_stddev>0.005</bias_stddev>
+                            </noise>
+                        </x>
+                        <y>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>0.05</stddev>
+                                <bias_mean>0.0</bias_mean>
+                                <bias_stddev>0.005</bias_stddev>
+                            </noise>
+                        </y>
+                        <z>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>0.05</stddev>
+                                <bias_mean>0.0</bias_mean>
+                                <bias_stddev>0.005</bias_stddev>
+                            </noise>
+                        </z>
+                    </linear_acceleration>
+                </imu>
+
+                <!-- Gazebo ROS plugin -->
+                <plugin name="${link_name}_plugin" filename="libgazebo_ros_imu_sensor.so">
+                    <ros>
+                        <remapping>~/out:=${link_name}/imu</remapping>
+                    </ros>
+                    <frame_name>${link_name}</frame_name>
+                    <initial_orientation_as_reference>false</initial_orientation_as_reference>
+                </plugin>
+
+            </sensor>
+                        
+        </gazebo>
+
+    </xacro:macro>
+</robot>
